@@ -3,24 +3,26 @@ import flyd from 'flyd'
 import snabbdom from 'snabbdom'
 import h from 'snabbdom/h'
 import render from 'ff-core/render'
+import Chartist from 'chartist'
 
-function init() {
-  let state = {}
-
-  return state
+const initChart = (type, data, opts, eventStreams) => vnode => {
+  if(vnode._chartist) return
+  vnode._chartist = new Chartist[type](vnode.elm, data, opts)
+  /*
+  if(eventStreams && eventStreams.draw$) {
+    vnode._chartist.on('draw', eventStreams.draw$)
+  } if(eventStreams && eventStreams.created$) {
+    vnode._chartist.on('created', eventStreams.created$)
+  }
+  */
 }
 
-function view(state) {
-  return h('body', [])
+function chart(type, data, opts, eventStreams) {
+  const init = initChart(type, data, opts, eventStreams)
+  return h('div.ff-chart', {
+    hook: {insert: init, update: init}
+  })
 }
 
-const patch = snabbdom.init([
-  require("snabbdom/modules/class")
-, require("snabbdom/modules/style")
-, require("snabbdom/modules/props")
-, require("snabbdom/modules/eventlisteners")
-, require("snabbdom/modules/attributes")
-])
-const container = document.body
-const state = init()
-render({container, state, view, patch})
+module.exports = chart
+
