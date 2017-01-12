@@ -26,28 +26,24 @@ var _chartist2 = _interopRequireDefault(_chartist);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-function init() {
-  var state = {};
-
-  return state;
-}
-
-var initChart = function initChart(type, data, opts) {
+var initChart = function initChart(type, data, opts, eventStreams) {
   return function (vnode) {
-    if (vnode._chartistInstance) {
-      vnode._chartistInstance.update(data, opts);
-    } else {
-      vnode._chartistInstance = new _chartist2.default[type](vnode.elm, data, opts);
+    if (vnode._chartist) return;
+    vnode._chartist = new _chartist2.default[type](vnode.elm, data, opts);
+    /*
+    if(eventStreams && eventStreams.draw$) {
+      vnode._chartist.on('draw', eventStreams.draw$)
+    } if(eventStreams && eventStreams.created$) {
+      vnode._chartist.on('created', eventStreams.created$)
     }
+    */
   };
 };
 
-function chart(type, data, opts) {
+function chart(type, data, opts, eventStreams) {
+  var init = initChart(type, data, opts, eventStreams);
   return (0, _h2.default)('div.ff-chart', {
-    hook: {
-      insert: initChart(type, data, opts),
-      update: initChart(type, data, opts)
-    }
+    hook: { insert: init, update: init }
   });
 }
 
